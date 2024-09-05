@@ -27,9 +27,16 @@ jobs:
             sudo apt install -y php git &&
             sudo rm -rf /var/www/html &&
             sudo git clone https://github.com/MohammadNomanAkhtar/second-GA.git /var/www/html &&
-            cd /var/www/html &&
-            sudo composer install &&
+            # Set COMPOSER_ALLOW_SUPERUSER to bypass root warning
+            export COMPOSER_ALLOW_SUPERUSER=1 &&
+            # Check if composer.json exists
+            if [ -f /var/www/html/composer.json ]; then
+              cd /var/www/html &&
+              sudo composer install
+            else
+              echo "composer.json not found in /var/www/html"
+            fi &&
             sudo chown -R ubuntu:ubuntu /var/www/html &&
             sudo chmod -R 755 /var/www/html &&
-            sudo systemctl restart httpd
+            sudo systemctl restart nginx
           EOF
