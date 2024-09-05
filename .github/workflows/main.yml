@@ -24,7 +24,7 @@ jobs:
         run: |
           ssh -v -o StrictHostKeyChecking=no -i key.pem ubuntu@3.80.173.163 << 'EOF'
             sudo apt update -y &&
-            sudo apt install -y php git composer &&
+            sudo apt install -y php git &&
             sudo rm -rf /var/www/html &&
             sudo git clone https://github.com/MohammadNomanAkhtar/second-GA.git /var/www/html &&
             cd /var/www/html &&
