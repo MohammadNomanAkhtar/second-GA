@@ -15,7 +15,6 @@ jobs:
 
     - name: Copy files to html file
       run: |
-        sudo cd /second-GA
         sudo cp index.html /var/www/html/
         
     - name: Restart Nginx
