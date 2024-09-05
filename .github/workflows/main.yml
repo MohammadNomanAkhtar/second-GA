@@ -1,0 +1,21 @@
+name: Testing GitHub Actions
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Copy files to html file
+      run: |
+        sudo cp /var/www/html
+    - name: Restart Nginx
+      run: |
+        sudo systemctl restart nginx
