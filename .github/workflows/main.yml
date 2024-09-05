@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Connect to EC2 instance
 
 on:
   push:
@@ -6,24 +6,30 @@ on:
       - main
 
 jobs:
-  deploy:
+  connect_to_ec2:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up SSH
+      - name: Install OpenSSH client
         run: |
-          mkdir -p ~/.ssh
-          echo "$EC2_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy to EC2
+          sudo apt-get update
+          sudo apt-get -y install openssh-client
+      - name: Set permissions for PEM key
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /var/www/html
-            sudo git pull origin main
-            sudo systemctl restart nginx
-          EOF
+          echo "${{ secrets.PEM_KEY }}" > key.pem
+          chmod 400 key.pem
+      - name: Connect to EC2 instance and deploy code
+        run: |
+          ssh -v -o StrictHostKeyChecking=no -i key.pem ec2-user@3.80.173.163 "
+          sudo yum update -y &&
+          sudo yum install -y amazon-linux-extras &&
+          sudo amazon-linux-extras install -y php8.0 &&
+          sudo yum install -y git &&
+          sudo yum install -y composer &&
+          sudo rm -rf /var/www/html &&
+          sudo git clone https://github.com/MohammadNomanAkhtar/second-GA.git /var/www/html &&
+          cd /var/www/html &&
+          sudo composer install &&
+          sudo chown -R ec2-user:ec2-user /var/www/html &&
+          sudo chmod -R 755 /var/www/html &&
+          sudo systemctl restart httpd"
