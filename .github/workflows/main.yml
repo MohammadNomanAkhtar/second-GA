@@ -15,7 +15,7 @@ jobs:
 
     - name: Copy files to html file
       run: |
-        sudo cp -r /var/www/html
+        sudo cp /var/www/html
         
     - name: Restart Nginx
       run: |
